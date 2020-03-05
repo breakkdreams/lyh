@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片上传</title>
+    <include file='public/head'/>
+        <style>
+            table th, table td{text-align: center;}
+            .ml-10 { margin-left: 10px; }
+        </style>
+</head>
+<body>
+    
+    <div class="wrap js-check-wrap">
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a>图片上传</a></li>
+            <li><a href="{:cmf_plugin_url('Demo://demo_config/index')}">基本配置</a>
+            </li>
+        </ul>
+
+        <form class="well form-inline margin-top-20">
+
+
+
+        <input type="submit" class="btn btn-primary" value="搜索" />
+    </form>
+    <form >
+        <table class="table table-bordered table-hover" zIndex="100">
+            <thead>
+                <tr class="theader">
+                    <th>ID</th>
+                    <th>昵称</th>
+                    <th>添加时间</th>
+                    <th>状态</th>
+                    <th>操作 &nbsp;
+	                    <a href="javascript:;" class="btn btn-success btn-sm add-config-btn" onclick="addDemo();">
+	                    	<i class="fa fa-plus-circle normal"></i> 添加会员
+	                    </a>
+                	</th>
+                </tr>
+            </thead>
+            <tbody>
+            	<volist name="data" id="vo">
+                <tr>
+                    <!--<td >{$vo.id}</td>-->
+                    <!--<td >{$vo.nickname}</td>-->
+                    <!--<td >{:date('Y-m-d H:i:s',$vo.create_time)}</td>-->
+                    <td >
+                        <!--<if condition="$vo.islock eq 2">-->
+                        	<!--禁用-->
+                        <!--<else>-->
+                        	<!--正常-->
+           				<!--</if>-->
+                	</td>
+                    <td>
+                        <!--<a class="btn btn-sm btn-success  " onclick="editDemo({$vo.id})">修改</a>-->
+                        <!--<a class="btn btn-sm btn-info " onclick="detailDemo({$vo.id})">查看</a>-->
+
+                        <!--<if condition="$vo.islock eq 2">-->
+                            <!--<a href="{:cmf_plugin_url('Demo://demo/disable')}?id={$vo.id}&type=1"    class="btn btn-sm btn-success  js-ajax-delete" data-msg="确定启用吗？">启用</a>-->
+                        <!--<else>-->
+                            <!--<a href="{:cmf_plugin_url('Demo://demo/disable')}?id={$vo.id}&type=2"   class="btn btn-sm btn-warning js-ajax-delete" data-msg="确定禁用吗？">禁用</a>-->
+                        <!--</if>-->
+
+                        <!--<a href="{:cmf_plugin_url('Demo://demo/deleteDemo')}?id={$vo.id}"    class="btn btn-sm btn-danger js-ajax-delete" data-msg="确定删除吗？">删除</a>    &lt;!&ndash; delete变为deleteMember方法 &ndash;&gt;-->
+                    </td>
+                </tr>
+                </volist>
+            </tbody>
+        </table>
+    <div class="pagination">{$page|default=''}</div>
+
+    </form>
+    </div>
+
+
+
+
+
+<include file='public/scripts'>
+<script src="__STATIC__/js/layer/layer.js"></script>
+<script src="__STATIC__/js/custom/custom.js"></script>
+
+<!-- 弹出层 -->
+<script type="text/javascript">
+
+    /**
+     * 添加会员
+     */
+    function addDemo(){
+        let addpage_url = "{:cmf_plugin_url('Demo://demo/addDemoPage')}";
+        let add_url = "{:cmf_plugin_url('Demo://demo/addDemo')}";
+        layer.open({
+            type: 2,
+            title: '添加',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['800px', '600px'],
+            btn:['提交','关闭'],
+            fixed:false,
+            content: addpage_url, //iframe的url
+            yes:function(index, layero){
+                var body = layer.getChildFrame('body', index);
+
+                parentInfo = window["layui-layer-iframe" + index].callbackdata();
+                console.log(parentInfo);
+
+
+		        var nickname = body.find('input[name=nickname]').val();
+		        if(nickname==''){
+		            layer.msg('昵称不可为空', function(){
+					});
+		            return false;
+		        }
+
+		        $.ajax({
+		            url:add_url,
+		            data:{'nickname':nickname},
+		            success:function(data){
+		                if(data.type=='success'){
+		            		layer.msg(data.msg,{time:2000},function(){
+                                window.location.reload();
+			                    layer.closeAll();
+			                });
+		            	}else if(data.type=='error'){
+		                	layer.msg(data.msg);
+		            	}
+		            },
+		            error:function(data){
+		                layer.msg('添加失败');
+		                return false;
+		            }
+		        })
+            }
+
+        });
+    }
+
+    /**
+     * 修改
+     */
+    function editDemo(data){
+        let editpage_url = "{:cmf_plugin_url('Demo://demo/editDemoPage')}?id="+data;
+        let edit_url = "{:cmf_plugin_url('Demo://demo/editDemo')}";
+        layer.open({
+            type: 2,
+            title: '修改',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['800px', '600px'],
+            btn:['提交','关闭'],
+            fixed:false,
+            content: editpage_url, //iframe的url
+            yes:function(index, layero){
+                var body = layer.getChildFrame('body', index);
+
+                parentInfo = window["layui-layer-iframe" + index].callbackdata();
+                console.log(parentInfo);
+
+
+		        var dara = body.find('#da').serialize();
+		        var nickname = body.find('input[name=nickname]').val();
+		        if(nickname==''){
+		            layer.msg('昵称不可为空', function(){
+					});
+		            return false;
+		        }
+
+		        $.ajax({
+		            url:edit_url,
+		            data:dara,
+		            success:function(data){
+		            	console.log(data.type);
+		            	if(data.type=='success'){
+		            		layer.msg(data.msg,{time:2000},function(){
+			                    layer.closeAll();
+			                    window.location.reload();//刷新页面
+			                });
+		            	}else if(data.type=='error'){
+		                	layer.msg(data.msg);
+		            	}
+		            },
+		            error:function(data){
+		            	console.log(data);
+		                layer.msg('修改失败');
+		                return false;
+		            }
+		        })
+            }
+        });
+    }
+    /**
+     * 查看会员
+     */
+    function detailDemo(data){
+    	console.log(data);
+        let url = "{:cmf_plugin_url('Demo://demo/detailDemoPage')}?id="+data;
+
+        layer.open({
+            type: 2,
+            title: '查看信息',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['800px', '600px'],
+            btn:['关闭'],
+            fixed:false,
+            content: url
+        });
+    }
+
+
+</script>
+
+
+
+</body>
+</html>

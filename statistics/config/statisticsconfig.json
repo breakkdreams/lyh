@@ -1,0 +1,163 @@
+{
+  "type1":{
+    "model":[
+      {
+        "height":"20%",
+        "col":[
+          {
+            "width": 24,
+            "choice": {
+              "chartcard":{
+                "name": "标签图",
+                "data": [],
+                "chickModel":{
+                  "name":"",
+                  "color":"",
+                  "tableName":"",
+                  "iconfont":"icon-ticket",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":""
+                  },
+                  "unit":"",
+                  "where":{}
+                },
+                "chickTable": []
+              },
+              "chartpie":{
+                "name": "饼状图",
+                "text": "",
+                "data": [],
+                "chickModel":{
+                  "name":"",
+                  "tableName":"",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":""
+                  },
+                  "where":{}
+                },
+                "chickTable": []
+              }
+
+            },
+            "beChoice": ""
+          }
+        ]
+      },
+      {
+        "height":"36%",
+        "col":[
+          {
+            "width": 8,
+            "choice": {
+              "chartpie":{
+                "name": "饼状图",
+                "text": "",
+                "data": [],
+                "chickModel":{
+                  "name":"",
+                  "tableName":"",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":""
+                  },
+                  "where":{}
+                },
+                "chickTable": []
+              }
+            },
+            "beChoice": ""
+          },
+          {
+            "width": 15,
+            "choice": {
+              "chartbar":{
+                "name": "柱状图",
+                "text": "",
+                "color":"",
+                "data": {},
+                "timeCycle":"0",
+                "showTimeCycleType":"week",
+                "chickModel":{
+                  "name":"",
+                  "tableName":"",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":"",
+                    "timeField":""
+                  },
+                  "where":{}
+                },
+                "chickTable": []
+              }
+            },
+            "beChoice": ""
+          }
+        ]
+      },
+      {
+        "height":"36%",
+        "col":[
+          {
+            "width": 24,
+            "choice": {
+              "chartbar":{
+                "name": "柱状图",
+                "text": "",
+                "color":"",
+                "data": {},
+                "timeCycle":"0",
+                "showTimeCycleType":"week",
+                "chickModel":{
+                  "name":"",
+                  "tableName":"",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":"",
+                    "timeField":""
+                  },
+                  "where":{}
+                },
+                "chickTable": []
+              },
+              "chartline":{
+                "name": "折线图",
+                "text": "",
+                "data": {},
+                "xData":[],
+                "timeCycle":"7",
+                "showTimeCycleType":"week",
+                "chickModel":{
+                  "name":"",
+                  "tableName":"",
+                  "field":{
+                    "options":["求和", "数量"],
+                    "name":"类型",
+                    "selectType":"",
+                    "selectField":"",
+                    "timeField":""
+                  },
+                  "where":{}
+                },
+                "chickTable": []
+              }
+            },
+            "beChoice": ""
+          }
+        ]
+      }
+    ],
+    "debug": true
+  }
+}

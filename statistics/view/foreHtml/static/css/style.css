@@ -1,0 +1,191 @@
+/*----------------------------------------清除默认样式----------------------------------------*/
+
+html,body{/*height:100%;*/min-height: 100vh;}
+html,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}
+header,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:normal;}
+html,body,fieldset,img,iframe,abbr{border:0;}
+i,cite,em,var,address,dfn{font-style:normal;}
+[hidefocus],summary{outline:0;}
+li{list-style:none;}
+h1,h2,h3,h4,h5,h6,small{font-size:100%;}
+sup,sub{font-size:83%;}
+pre,code,kbd,samp{font-family:inherit;}
+q:before,q:after{content:none;}
+textarea{overflow:auto;resize:none;}
+label,summary{cursor:default;}
+a,button{cursor:pointer;}
+h1,h2,h3,h4,h5,h6,em,strong,b{font-weight:bold;}
+del,ins,u,s,a,a:hover{text-decoration:none;}
+body,textarea,input,button,select,keygen,legend{font:0.15rem/1.14 Microsoft YaHei,arial,\5b8b\4f53;color:#333;outline:0;}
+body{background:#fff;}
+button{border: none;background-color: transparent;}
+a,a:hover{color:#333;}
+/*去除图片下方空隙*/
+img{vertical-align: middle;}
+/* 去除input默认填充的背景颜色*/
+input:-webkit-autofill {-webkit-box-shadow: 0 0 0px 1000px white inset;}
+/*清除input[type=number]的默认样式*/
+input[type=number] {-moz-appearance:textfield;}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {-webkit-appearance: none;margin: 0;}
+
+*{
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);/*清除移动端 a 标签等点击区域变色*/
+	-webkit-overflow-scrolling : touch}/*避免ios滑动滚动条卡顿*/
+
+
+/*清除移动端 input 样式*/
+input{
+    border: none;
+    -moz-appearance:none;
+    -webkit-appearance : none ; /*解决ios上按钮的圆角问题*/
+    border-radius: 0; /*解决ios上输入框圆角问题*/
+    outline:medium; /*去掉鼠标点击的默认黄色边框*/
+    background-color: transparent;
+}
+
+/*----------------------------------------清除默认样式----------------------------------------*/
+
+
+.bg-fafafa-h1{
+    background-color: #fafafa;
+    height: 0.1rem;
+}
+.body{
+    padding: 0.2rem 0;
+}
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.topTitle{
+    font-size: 0.3rem;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 0.2rem;
+    color:#2f54eb;
+    font-family: Raleway, sans-serif;
+}
+.imgboxs{
+    display: flex;
+    padding-bottom: 0.2rem;
+}
+.imgboxs .img{
+    text-align: center;
+    width: 50%;
+}
+.imgboxs .img img{
+    width: 80%;
+}
+.imgboxs .img p{
+    font-size: 12px;
+    line-height: 0.2rem;
+    padding-top: 0.1rem;
+}
+h3.title{
+    line-height: 0.35rem;
+    font-size: 0.16rem;
+}
+.example,.tips{
+    padding:0.1rem;
+}
+.tips p{
+    font-size: 0.13rem;
+    line-height: 0.25rem;
+}
+.footerButton{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.void-div{height: 0.45rem;}
+.footerButton a{
+    display: inline-block;
+    text-align: center;
+    background-color: #096dd9;
+    color: #fff;
+    width: 100%;
+    font-size: 0.15rem;
+    line-height: 0.5rem;
+}
+.from{padding: 0.1rem;}
+.from .input,.from .upload{
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.1rem;
+}
+.from .input span,.from .upload span{
+    display: inline-block;
+    font-size: 0.13rem;
+    width: 0.75rem;
+}
+.from .input input{
+    flex: 1;
+    line-height: 0.35rem;
+    font-size: 0.15rem;
+    background-color: #fafafa;
+    padding-left: 0.1rem;
+}
+.from .input.type2 button{
+    background-color: #1890ff;
+    color: #fff;
+    border-radius: 5px;
+    line-height: 0.35rem;
+    margin-left: 0.05rem;
+    font-size: 12px;
+    padding:  0 0.1rem;
+}
+.from .input.type3 input{
+    width: 0.35rem;
+    padding-left: 0;
+    text-align: center;
+    background-color: transparent;
+    border-bottom: 1px solid #999;
+}
+.from .input.type3 em{
+    display: inline-block;
+    padding: 0 0.05rem;
+    font-size: 0.15rem;
+
+}
+
+.from .upload input{display: none;}
+.from .upload .icon-plus{
+    background-color: #fbfdff;
+    border: 1px dashed #c0ccda;
+    border-radius: 6px;
+    box-sizing: border-box;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    text-align: center;
+    font-size: 0.4rem;
+    color: #8c939d;
+}
+.from .upload .img.long{
+    flex: 1;
+}
+.from .upload .img img{
+    max-width: 80%;
+    border: 1px solid #eee;
+}

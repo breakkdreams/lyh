@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>模块演示</title>
+    <include file='public/head'/>
+	<style>
+		.layui-upload-img {
+			width: 92px;
+			height: 92px;
+			margin: 0 10px 10px 0;
+		}
+	</style>
+</head>
+<body>
+    	
+	<div class="wrap js-check-wrap">
+        <!--<ul class="nav nav-tabs">-->
+			<!--<php> $currentTab= 4;</php>-->
+			<!--<include file='public/nav'/>-->
+        <!--</ul>-->
+        <!--<br>-->
+
+		<form method="POST" class="js-ajax-form layui-form" action="{:cmf_plugin_url('FileManage://video_config/editSetting')}">
+			<table class="table table-bordered table-hover"  style="text-align:center;">
+				<tr>
+					<td class="td-head" style="width:15%;" >视频上传类型限制</td>
+					<td class="td-body"  >
+						<div class="input-group" style="width:30%;">
+							<foreach name="data.upload_type" item="vo" key="k">
+								<if condition="$vo eq 'true'">
+									<input type="checkbox" name="upload_type[{$k}]" title="{$k}" lay-skin="primary" checked>
+								<else />
+									<input type="checkbox" name="upload_type[{$k}]" title="{$k}" lay-skin="primary">
+								</if>
+							</foreach>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="td-head" style="width:15%;" >视频大小限制</td>
+					<td class="td-body"  >
+					    <div class="input-group" style="width:30%;">
+						<input type="number" class="form-control" style="text-align:center"  name="upload_size" oninput = "value=value.replace(/[^\d]/g,'')" placeholder="视频大小限制" value="{$data.upload_size}" required  >
+					    <span class="input-group-addon">B</span>
+						</div>
+						<div class="input-group" style="width:30%;">
+							<span class="form-control-static">(注:1G=1024MB 1MB=1024KB 1KB=1024B)</span>
+						</div>
+	    			</td>
+				</tr>
+				<tr>
+					<td class="td-head" style="width:15%;" >上传路径</td>
+					<td class="td-body"  >
+						<div class="input-group" style="width:30%;">
+							<span class="input-group-addon">upload/</span>
+							<input type="text" class="form-control" style="text-align:center"  name="upload_path"  placeholder="上传路径" value="{$data.upload_path}" required  >
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="td-head" style="width:15%;" >文件名前缀</td>
+					<td class="td-body"  >
+						<div class="input-group" style="width:30%;">
+							<input type="text" class="form-control" style="text-align:center"  name="upload_file_pre_name" placeholder="文件名前缀" value="{$data.upload_file_pre_name}" >
+						</div>
+					</td>
+				</tr>
+			</table>
+			<div style="text-align:center;">
+				<button type="submit" class="btn btn-success js-ajax-submit " name="on" onclick="wclose();">提交</button>
+				<!-- 测试的时候js-ajax-submit从class里取出来 -->
+		    </div>
+		</form>
+	</div>
+<include file="public/scripts"/>
+	<script>
+		var wclose = function(){
+			console.log("111")
+			setTimeout(function(){
+				var index = parent.layer.getFrameIndex(window.name);
+				parent.layer.close(index)
+			},2000);
+		}
+		$(document).ready(function(){
+			var is_watermark=$('input[name="is_watermark"]:checked').val();
+			if(is_watermark=='true'){
+				$('#watermark_type').show();
+				var watermark_type=$('input[name="watermark_type"]:checked').val();
+				if(watermark_type==1){
+					$('#watermark_img').show();
+					$('#watermark_text').hide();
+				}else if(watermark_type==2){
+					$('#watermark_img').hide();
+					$('#watermark_text').show();
+				}else if(watermark_type==3){
+					$('#watermark_img').show();
+					$('#watermark_text').show();
+				}
+			}else{
+				$('#watermark_type').hide();
+				$('#watermark_img').hide();
+				$('#watermark_text').hide();
+			}
+		});
+
+//		$('input[name="is_watermark"]').click(function(){
+//			var bool=$(this).val();
+//			layer.msg(bool)
+//			if(bool=='true'){
+//				$('#watermark_type').show();
+//				var watermark_type=$('input[name="watermark_type"]:checked').val();
+//				if(watermark_type==1){
+//					$('#watermark_img').show();
+//					$('#watermark_text').hide();
+//				}else if(watermark_type==2){
+//					$('#watermark_img').hide();
+//					$('#watermark_text').show();
+//				}else if(watermark_type==3){
+//					$('#watermark_img').show();
+//					$('#watermark_text').show();
+//				}
+//			}else{
+//				$('#watermark_type').hide();
+//				$('#watermark_img').hide();
+//				$('#watermark_text').hide();
+//			}
+//		});
+//		$('input[name="watermark_type"]').click(function(){
+//			var watermark_type=$(this).val();
+//			if(watermark_type==1){
+//				$('#watermark_img').show();
+//				$('#watermark_text').hide();
+//			}else if(watermark_type==2){
+//				$('#watermark_img').hide();
+//				$('#watermark_text').show();
+//			}else if(watermark_type==3){
+//				$('#watermark_img').show();
+//				$('#watermark_text').show();
+//			}
+//		});
+		//普通图片上传
+		var upload=layui.upload,
+				form=layui.form,
+				layer=layui.layer;
+		form.on('radio(is_watermark)', function(data){
+			console.log(data)
+			var is_watermark = data.value;
+			if(is_watermark=='true'){
+				$('#watermark_type').show();
+				var watermark_type=$('input[name="watermark_type"]:checked').val();
+				if(watermark_type==1){
+					$('#watermark_img').show();
+					$('#watermark_text').hide();
+				}else if(watermark_type==2){
+					$('#watermark_img').hide();
+					$('#watermark_text').show();
+				}else if(watermark_type==3){
+					$('#watermark_img').show();
+					$('#watermark_text').show();
+				}
+			}else{
+				$('#watermark_type').hide();
+				$('#watermark_img').hide();
+				$('#watermark_text').hide();
+			}
+		});
+		form.on('radio(watermark_type)', function(data){
+			console.log(data)
+			var watermark_type = data.value;
+			if(watermark_type==1){
+				$('#watermark_img').show();
+				$('#watermark_text').hide();
+			}else if(watermark_type==2){
+				$('#watermark_img').hide();
+				$('#watermark_text').show();
+			}else if(watermark_type==3){
+				$('#watermark_img').show();
+				$('#watermark_text').show();
+			}
+		});
+		var uploadInst = upload.render({
+			elem: '#test1'
+			,url: "{:cmf_plugin_url('FileManage://image/upload_img')}"
+			,before: function(obj){
+				//预读本地文件示例，不支持ie8
+				obj.preview(function(index, file, result){
+					$('#demo1').attr('src', result); //图片链接（base64）
+				});
+			}
+			,done: function(res){
+				if(res.code == 200){
+					var html='<input type="hidden" name="watermark_img" value="'+res.data.filepath+'">';
+					$(this.elem).parent().append(html);
+					return layer.msg('上传成功');
+				}else{
+					return layer.msg(res.message);
+				}
+			}
+			,error: function(){
+				//演示失败状态，并实现重传
+				var demoText = $('#demoText');
+				demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+				demoText.find('.demo-reload').on('click', function(){
+					uploadInst.upload();
+				});
+			}
+		});
+	</script>
+</body>

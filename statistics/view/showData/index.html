@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>模块演示</title>
+    <include file='public/head'>
+    <link rel="stylesheet" type="text/css" href="__PLUGIN_TMPL__/public/balabala/myVue.css"/>
+    <style>
+        table th, table td{text-align: center;}
+        .ml-10 { margin-left: 10px; }
+        [v-cloak]{
+            display: none
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+        </ul>
+        <div id="fx" v-cloak>
+            <div class="well form-inline margin-top-20" >
+                <select v-model="seachType" type="text" name="stype" class="form-control">
+                    <option value="MIID" >用户ID</option>
+                    <option value="nickname" >用户名</option>
+                    <option value="mobile" >手机</option>
+                    <option value="company" >公司</option>
+                </select>
+                <input type="text" class="form-control" name="keyword" style="width:200px;" v-model="set" placeholder="输入关键词"/>
+                <input type="button" class="btn btn-primary" value="搜索" @click="seach" />
+
+            </div>
+            <table class="table table-bordered table-hover" style="text-align:center;"   >
+                <thead>
+                <tr class="theader">
+                    <th style="text-align:center;width:10%;">用户ID</th>
+                    <th style="text-align:center;width:10%;">姓名</th>
+                    <th style="text-align:center;width:10%;">单位名称</th>
+                    <th style="text-align:center;">手机号</th>
+                    <th style="text-align:center;">人脸照片</th>
+                    <th style="text-align:center;">健康证照片</th>
+                    <th style="text-align:center;">健康证到期时间</th>
+                    <th style="text-align:center;">人员类别</th>
+                    <th style="text-align:center;">添加时间</th>
+                    <!--<th style="text-align:center;">操作</th>-->
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr v-for="(item, index) in dateInfo">
+
+                    <td >{{item.MIID}}</td>
+                    <td >{{item.nickname}}</td>
+                    <td >{{item.company}}</td>
+                    <td >{{item.mobile}}</td>
+                    <td ><div class="layer-photos-demo"><image  :layer-src="uploadPath+item.face_thumb" :src=" uploadPath+item.face_thumb"   style="width:80px"/></div></td>
+                    <td ><div class="layer-photos-demo"><image  :layer-src="uploadPath+item.health_card" :src=" uploadPath+item.health_card"   style="width:80px"/></div></td>
+                    <td >{{item.health_endtime}}</td>
+                    <td ><div v-if="item.member_type == 1">食品安全管理员</div><div v-else-if="item.member_type==2">后厨人员</div><div v-else>{{item.member_type}}</div></td>
+                    <td >{{item.addtime}}</td>
+                    <!--<td>-->
+                        <!--<button type="button" class="btn btn-info" @click="detailmember(item.uid)">浏览</button>-->
+                    <!--</td>-->
+
+                </tr>
+
+                </tbody>
+
+            </table>
+            <selfpage :pagestart="pagestart" :pagenums="pagenums" :page="page" :pagecount="pagecount" @changepage="pageChange"></selfpage>
+        </div>
+    </div>
+
+
+
+
+
+<include file='public/scripts'/>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+<script src="__STATIC__/js/layer/layer.js"></script>
+<script src="__STATIC__/js/custom/custom.js"></script>
+
+<script src="__PLUGIN_TMPL__/public/balabala/myVue.js"></script>
+<script src="__PLUGIN_TMPL__/public/balabala/ajax.js"></script>
+<link  rel="stylesheet" type="text/css" href="__PLUGIN_TMPL__/public/balabala/iconfont.css">
+
+<!-- 弹出层 -->
+<script type="text/javascript">
+    new Vue({
+        el:"#fx",
+        data:{
+            dateInfo:{},
+            pagestart:0,
+            pagenums:0,
+            page:1,
+            pagecount:0,
+            set:"",
+            seachType:"MIID",
+            uploadPath:'{$uploadPath}'
+        },
+        mounted:function(){
+            this.getDataInfo();
+        },
+        methods:{
+            getDataInfo:function(){
+                var that = this;
+                var url =  "{:cmf_plugin_url('statistics://statistics/getMemberInfoData')}";
+                var parm = {page:this.page, limit:10};
+                parm[this.seachType] = this.set;
+                aj.post(url, parm, function(data){
+                    if(data.code != 200)
+                        layer.msg(data.message);
+                    else{
+                        that.dateInfo = data.data.data;
+                        that.pagecount = data.data.pageCount;
+                        that.pagestart = data.data.pageStart;
+                        that.pagenums = data.data.pageNums;
+                        that.$nextTick(function() {
+                            layer.photos({
+                                photos: '.layer-photos-demo'
+                                ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                            });
+                        });
+
+                    }
+                })
+            },
+            pageChange:function(page){
+                if(this.page == page)
+                    return;
+                this.page = page;
+                this.getDataInfo();
+            },
+            detailmember:function(uid)
+            {
+                var url = "{:cmf_plugin_url('Member://member/detailMemberPage')}?uid="+uid;
+
+                layer.open({
+                    type: 2,
+                    title: '查看信息',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['800px', '600px'],
+                    btn:['关闭'],
+                    fixed:false,
+                    content: url
+                });
+            },
+            seach:function(){
+                this.page = 1;
+                this.getDataInfo();
+            }
+        }
+    })
+</script>
+
+
+
+</body>
+</html>

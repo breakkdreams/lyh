@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>模块演示</title>
+    <!--    <link rel="stylesheet" type="text/css" href="http://unpkg.com/view-design/dist/styles/iview.css">-->
+    <include file='public/head'></include>
+
+    <style>
+        .ml-10 { margin-left: 10px; }
+        [v-cloak]{
+            display: none
+        }
+        .icon_fl{
+            float: right;
+        }
+    </style>
+</head>
+<body style="background-color: #f8f8f8">
+<div class="iconfont icon-repair icon_fl" onclick="open_setting()"></div>
+<div class="wrap js-check-wrap" id="app"  v-cloak>
+    <chartModel style="width: 100%;height: calc( 100vh - 90px );" class="secondConfig"  :statistics="showChart"></chartModel>
+</div>
+
+<include file='public/scripts'></include>
+<script src="__STATIC__/js/custom/custom.js"></script>
+<script src="__STATIC__/js/layer/layer.js"></script>
+<include file='public/chart'></include>
+<link rel="stylesheet" type="text/css" href="__PLUGIN_TMPL__/public/balabala/myVue.css"/>
+<script src="__PLUGIN_TMPL__/public/balabala/myVue.js"></script>
+<script>
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            current:0,
+            currentNum:3,
+            modelData :{},
+            show:false,
+            data:[],
+            choiceData :{},
+            xx_s :false,
+            databaseconfig:{},
+            icon:[],
+            showChart:{}
+
+        },
+        provide :function() {
+            return {
+                app: this
+            }
+        },
+        created:function(){
+//            this.getStatisticsConfig();
+
+        },
+        mounted:function(){
+//            this.getDatabaseConfig();
+//            this.getIcon();
+            this.getShowChart();
+        },
+        methods:{
+            changeCurrent:function(type)
+            {
+                switch (type) {
+                    case 'add':if(this.current >= this.currentNum-1)
+                        this.current = this.currentNum-1;
+                    else
+                        this.current++;
+                        break;
+                    case 'sub':if(this.current <= 0)
+                        this.current = 0;
+                    else
+                        this.current--;
+                        break;
+                }
+            },
+            getStatisticsConfig:function()
+            {
+                var that = this;
+                aj.post("__URL__/plugin/statistics/statistics/getStatisticsConfig.html", {}, function(data){
+                    console.log(data);
+                    if(data.code !== 200)
+                        that.$Message.error(data.message);
+                    else
+                    {
+                        that.data = data.data;
+                        // console.log(that.modelData.type1.model);
+                        //that.pageCount = data.pageCount;
+                    }
+                })
+            },
+            getDatabaseConfig:function(){
+                var that = this;
+                aj.post("__URL__/plugin/statistics/statistics/getDatabaseConfig.html", {}, function(data){
+                    console.log(data);
+                    if(data.code !== 200)
+                        that.$Message.error(data.message);
+                    else
+                    {
+                        that.databaseconfig = data.data;
+                        // console.log(that.modelData.type1.model);
+                        //that.pageCount = data.pageCount;
+                    }
+                })
+            },
+            choice:function(data){
+                this.choiceData = data;
+            },
+            hi:function(key_1, key_2, changeType, value)
+            {
+                console.log(key_1, key_2, changeType, value, "ha");
+//                this.choiceData["model"][key_1]["col"][key_2]["beChoice"] = value;
+                this.$set(this.choiceData["model"][key_1]["col"][key_2], "beChoice", value);
+                console.log( this.choiceData["model"][key_1]["col"][key_2]["beChoice"]);
+                console.log( this.choiceData["model"]);
+//                this.$forceUpdate();
+
+            },
+            hii:function(key_1, key_2, changeType, value)
+            {
+                console.log(key_1, key_2, changeType, value, "hii");
+                var that = this;
+                aj.post('__URL__/plugin/statistics/statistics/getTestModelData.html', {type:changeType, tableConfig:value}, function(data){
+                    console.log(data);
+                    that.$set(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType], "data", data.data);
+                    that.$forceUpdate();
+                    console.log(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType])
+                })
+            },
+            sss:function(){
+                this.xx_s = true;
+            },
+            ni:function(data)
+            {
+                console.log(data);
+            },
+            getIcon:function(){
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/getIcon")}';
+                aj.post(url, {}, function(data){
+                    if(data.code == "200")
+                        that.icon = data.data;
+                })
+            },
+            showData:function()
+            {
+                console.log(this.choiceData);
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/saveConfig")}';
+                aj.post(url, {"chartConfig":this.choiceData}, function(data){
+                    console.log(data);
+                })
+            },
+            getShowChart:function()
+            {
+                console.log(this.choiceData);
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/showChart")}';
+                aj.post(url, {}, function(data){
+                    if(data["code"] != 200)
+                        layer.msg(data["message"]);
+                    else
+                    {
+                        that.showChart = data.data;
+                        //console.log(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType])
+                    }
+
+                })
+            }
+        }
+
+    })
+    function open_setting() {
+        var addurl = "{:cmf_plugin_url('Statistics://statistics/config')}";
+        var lay_open = layer.open({
+            type: 2,
+            title: '设置',
+            shadeClose: true,
+            shade: 0.8,
+            area: 'auto',
+            fixed: false,
+            content: addurl //iframe的url
+
+        });
+        layer.full(lay_open);
+    }
+
+
+//    var l1 = new Vue({
+//        el: '#app',
+//        data: {
+//            list: res.data
+//        },
+//        methods:{ // 方法
+//            newsinfo:function(url,name,id)
+//            {
+//                $str = {
+//                    id: id
+//                };
+//
+//                zfy.openwin(url,name,$str);
+//            },
+//            picurl: function(img) {
+//                if (img.indexOf("http://") == -1) {
+//                    return "http://crm.lovenicest.com/";
+//                }
+//                else {
+//                    return "";
+//                }
+//
+//            },
+//
+//            tips:function()
+//            {
+//                layer.msg('提醒卖家发货成功');
+//            }
+//
+//        }
+//
+//    });
+</script>
+
+
+</body>
+</html>

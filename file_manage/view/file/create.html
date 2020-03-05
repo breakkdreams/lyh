@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>创建参数</title>
+    <include file='public/head'>
+        </head>
+<body>
+<div class="wrap js-check-wrap" id="addFormJt">
+
+    <form role="form" id="fm" class="form-horizontal" method="post">
+            <div class="form-body">
+                        <div class="form-group form-md-line-input">
+                <label class="col-2 col-sm-2 col-md-2 control-label" for="Title">广告名称</label>
+                <div class="col-10 col-sm-10 col-md-10">
+                    <input type="text" class="form-control" name="title" id="title" placeholder="输入广告名称" >
+                    <div class="form-control-focus"> </div>
+
+                </div>
+            </div>
+
+           <div class="form-group form-md-line-input">
+                <label class="col-2 col-sm-2 col-md-2 control-label" for="form_control_1">广告类型</label>
+                <div class="col-10 col-sm-10 col-md-10">
+                    <select name="adtype" id="adtype" class="form-control">
+                        <option value="0">选择类型</option>
+                        <volist name="adtype" id="v">
+                            <option value="{$v.id}">{$v.title}</option>
+                        </volist>    
+                    </select>
+                  
+                </div>
+            </div>
+            <div id="type17" class="atype" style="display: none;">
+    {:widget('video/ad/getadtype',['id'=>17])}
+</div>
+<div id="type18" class="atype"  style="display: none;">
+    {:widget('video/ad/getadtype',['id'=>18])}
+</div>
+<div id="type21" class="atype"  style="display: none;">
+    {:widget('video/ad/getadtype',['id'=>21])}
+</div>    
+           <div class="form-group form-md-line-input">
+                <label class="col-2 col-sm-2 col-md-2 control-label" for="inlineRadio3">广告起止</label>
+                <div class="col-10 col-sm-10 col-md-10">
+                 <input type="text" class="form-control" name="sedate" id="sedate" placeholder="选择开始至结束时间" >
+                </div>
+            </div>
+<div class="form-group form-md-line-input">
+                <label class="col-2 col-sm-2 col-md-2 control-label" for="inlineRadio3">是否启用</label>
+                <div class="col-10 col-sm-10 col-md-10">
+                    <label class="radio-inline">
+  <input type="radio" name="enable" id="inlineRadio3"  value="1"> 是
+</label>
+<label class="radio-inline">
+  <input type="radio" name="enable" id="inlineRadio4" checked="" value="0"> 否
+</label>
+
+                  
+                </div>
+            </div>
+            <div class="form-group form-md-line-input ">
+                <label class="col-2 col-sm-2 col-md-2 control-label" for="MenuSort">排序</label>
+                <div class="col-10 col-sm-10 col-md-10">
+                    <input type="text" class="form-control" name="sort" id="MenuSort" placeholder="输入排序值"  value="0">
+                    <div class="form-control-focus"> </div>
+                </div>
+            </div>
+            <input type="hidden" class="form-control" name="upfileid" value="0" id="upfileid"  >
+            <input type="hidden" class="form-control" name="url" value="" id="url"  >
+    </form>
+</div>
+
+      
+<include file="public/scripts"/>
+<script src="__STATIC__/js/layer/layer.js"></script>
+
+
+<script type="text/javascript">
+    $(function(){
+        $("#adtype").on("click",function(){
+            $(".atype").hide();
+            if(eval($(this).val())>0)
+            {
+                
+                $("#type"+$(this).val()).show();
+      
+            }
+            
+        })
+    })
+ var  upload = layui.upload;
+         var element = layui.element;
+         var laydate = layui.laydate;
+          element.init();
+          initup(17,'images');
+          initup(18,'file');
+          initup(21,'images');
+          laydate.render({
+    elem: '#sedate'
+    ,range: true
+  });
+  
+
+    /**
+     * 获取窗口中的元素，然后返回给父级
+     * @return {[type]} [description]
+     */
+    function callbackdata(){
+        var arr = '';
+        // $("input[name=ceshi]").each(function(){
+        //     arr = $(this).val()+','+arr;
+        // })
+        // console.log(arr);
+
+
+        return '1'
+    }
+    function initup($id,$accept)
+    {
+        upload.render({
+    elem: '#test'+$id
+    ,url: "{:cmf_plugin_url('video://video/upload')}"
+    ,async: false
+    ,method: 'post'   
+    ,auto: true
+    ,data:{
+        id:$id
+    }
+    ,progress: function(value) {                    
+       element.progress('js_upload_progress', value+'%');
+    }
+    ,accept: $accept //普通文件
+    ,field:'file'  
+    ,before: function(obj){
+
+        element.progress('js_upload_progress'+$id, '0%');//设置页面进度条
+                    layer.open({
+                        type: 1,
+                        title: '上传进度',
+                        closeBtn: 0, //不显示关闭按钮
+                        area: ['400px'],
+                        shadeClose: true, //开启遮罩关闭
+                        content: $("#uploadLoadingDiv"+$id).html(),                    
+                    });
+    }
+    ,done: function(res){
+       
+        if(res.code==200)
+        {
+            $("#filename"+$id).html(res.filepath);
+            $("#upfileid").val(res.upfileid);
+            $("#url").val(res.filepath);
+        }
+        layer.close(layer.index);
+        layer.msg("上传成功");
+    }
+    ,error: function(index, upload){   
+        element.progress('js_upload_progress'+$id, '0%');
+        layer.msg('上传失败');
+    }
+    });
+    }
+</script>
+
+</body>
+</html>

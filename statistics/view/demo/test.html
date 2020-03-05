@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>模块演示</title>
+<!--    <link rel="stylesheet" type="text/css" href="http://unpkg.com/view-design/dist/styles/iview.css">-->
+    <include file='public/head'></include>
+
+    <style>
+        .ml-10 { margin-left: 10px; }
+        [v-cloak]{
+            display: none
+        }
+    </style>
+</head>
+<body style="background-color: #f8f8f8">
+    <div class="wrap js-check-wrap" id="test"  v-cloak>
+        <Steps :current="current">
+            <Step title="选择模板"></Step>
+            <Step title="配置数据" ></Step>
+            <Step title="完成" ></Step>
+            <!--        <Step title="待进行" content="这里是该步骤的描述信息"></Step>-->
+        </Steps>
+        <!--        <drawerbox></drawerbox>-->
+        <div class="box">
+                <!--     内容       -->
+                <template v-if="current== 0">
+
+                    <div class="fl">
+                        <chartModel :statistics="choiceData" :showchart="false">
+                        </chartModel>
+                    </div>
+
+                    <div class="fr">
+                        <template v-for="(item, index) in data">
+                            <div style="float: left">
+                                <chartModel :statistics="item" :showchart="false"></chartModel>
+                            </div>
+                            <div style="float: right;padding: 2% 0">
+                                <i-button :size="'small'" @click="choice(item)">选择</i-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template v-else-if="current== 1">
+                    <chartModel class="secondConfig" :icon="icon" :statistics="choiceData" :databaseconfig="databaseconfig" :showchar="true" @change-model="hi" @test-model="checkCharData"></chartModel>
+
+                </template>
+                <template v-else-if="current== 2">
+                    <i-button @click="showData">更新数据</i-button>
+                </template>
+
+        </div>
+        <div class="btn_1">
+                <i-button style="margin-right: 20px" @click="changeCurrent('sub')">上一步</i-button>
+                <i-button style="margin-left: 20px" @click="changeCurrent('add')">下一步</i-button>
+            </div>
+            <!--<chartModel style="width: 100%;height: calc( 100vh - 90px );" class="secondConfig"  :statistics="showChart"   ></chartModel>-->
+    </div>
+
+<include file='public/scripts'></include>
+<script src="__STATIC__/js/custom/custom.js"></script>
+<script src="__STATIC__/js/layer/layer.js"></script>
+<include file='public/chart'></include>
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/balabala/myVue.css"/>
+<script src="__STATIC__/js/balabala/myVue.js"></script>
+<script>
+
+    var app = new Vue({
+        el:"#test",
+        data:{
+            current:0,
+            currentNum:3,
+            modelData :{},
+            show:false,
+            data:[],
+            choiceData :{},
+            xx_s :false,
+            databaseconfig:{},
+            icon:[],
+            showChart:{}
+
+        },
+        provide :function() {
+            return {
+                app: this
+            }
+        },
+        created:function(){
+            this.getStatisticsConfig();
+
+        },
+        mounted:function(){
+            this.getDatabaseConfig();
+            this.getIcon();
+//            this.getShowChart();
+        },
+        methods:{
+            changeCurrent:function(type)
+            {
+                switch (type) {
+                    case 'add':if(this.current >= this.currentNum-1)
+                                    this.current = this.currentNum-1;
+                               else
+                                {
+                                    if(this.current == 0)
+                                    {
+                                        if( Object.keys(this.choiceData).length  <= 0)
+                                        {
+                                            this.$Message.error("请先选择模式");
+                                            return ;
+                                        }
+                                    }
+                                    this.current++;
+                                }
+                               break;
+                    case 'sub':if(this.current <= 0)
+                                    this.current = 0;
+                               else
+                                    this.current--;
+                                    break;
+                }
+            },
+            getStatisticsConfig:function()
+            {
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/getStatisticsConfig")}';
+                aj.post(url, {}, function(data){
+                    console.log(data);
+                    if(data.code == 200)
+                    {
+
+                        that.data = data.data.data;
+                    }
+                    else if(data.code == 201)
+                    {
+                        that.data = data.data.data;
+                        that.choiceData = data.data.choiceData;
+                        that.current = 1;
+                        // console.log(that.modelData.type1.model);
+                        //that.pageCount = data.pageCount;
+                    }
+                    else
+                        that.$Message.error(data.message);
+                })
+            },
+            getDatabaseConfig:function(){
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/getDatabaseConfig")}';
+                aj.post(url, {}, function(data){
+                    console.log(data);
+                    if(data.code !== 200)
+                        that.$Message.error(data.message);
+                    else
+                    {
+                        that.databaseconfig = data.data;
+                        // console.log(that.modelData.type1.model);
+                        //that.pageCount = data.pageCount;
+                    }
+                })
+            },
+            choice:function(data){
+                this.choiceData = data;
+            },
+            hi:function(key_1, key_2, changeType, value)
+            {
+                console.log(key_1, key_2, changeType, value, "ha");
+                this.$set(this.choiceData["model"][key_1]["col"][key_2], "beChoice", value);
+                console.log( this.choiceData["model"][key_1]["col"][key_2]["beChoice"]);
+                console.log( this.choiceData["model"]);
+            },
+            /**
+             * 筛选单个区域内容是否有问题
+             * @param key_1 纵向位置
+             * @param key_2 横向位置
+             * @param changeType 选择的图表类型
+             * @param value 值
+             */
+            checkCharData:function(key_1, key_2, changeType, value)
+            {
+//                console.log(key_1, key_2, changeType, value, "hii");
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/getTestModelData")}';
+                aj.post(url, {type:changeType, tableConfig:value}, function(data){
+                    if(data["code"] != 200)
+                        layer.msg(data["message"]);
+                    else
+                    {
+                        if(data.data.type == "chartline")
+                        {
+                            that.$set(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType], "xData", data.data.xData);
+                        }
+                        that.$set(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType], "data", data.data.data);
+
+                        that.$forceUpdate();
+                        console.log(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType])
+                    }
+                })
+            },
+            sss:function(){
+                this.xx_s = true;
+            },
+            ni:function(data)
+            {
+                console.log(data);
+            },
+            getIcon:function(){
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/getIcon")}'
+                aj.post(url, {}, function(data){
+                   if(data.code == "200")
+                       that.icon = data.data;
+                })
+            },
+            showData:function()
+            {
+                console.log(this.choiceData);
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/saveConfig")}'
+                aj.post(url, {"chartConfig":this.choiceData}, function(data){
+                    if(data["code"] != 200)
+                        layer.msg(data["message"]);
+                    else
+                    {
+                        window.parent.location.reload();
+                        layer.msg("更新成功");
+                        setTimeout(function(){
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);//关闭当前页
+                        }, 500);
+
+                        //console.log(that.choiceData["model"][key_1]["col"][key_2]["choice"][changeType])
+                    }
+                })
+            },
+            getShowChart:function()
+            {
+                console.log(this.choiceData);
+                var that = this;
+                var url = '{:cmf_plugin_url("Statistics://statistics/showChart")}'
+                aj.post(url, {}, function(data){
+                    console.log(data);
+                    that.showChart = data.data;
+                })
+            }
+        }
+
+    })
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>广告管理</title>
+    <include file='public/head'/>
+        <style>
+            table th, table td{text-align: center;}
+            .ml-10 { margin-left: 10px; }
+        </style>
+        </head>
+<body>
+
+<div class="wrap js-check-wrap">
+
+    <ul class="nav nav-tabs">
+        <php> $currentTab= 1;</php>
+        <include file='public/nav'/>
+    </ul>
+    <form class="well form-inline margin-top-20" action="" method="post">
+        <input type="text" class="js-bootstrap-date js-bootstrap-datetime form-control" autocomplete="off" name="start_time" value="{$Think.post.start_time}" placeholder="开始时间" style="width:120px">
+        --
+        <input type="text" autocomplete="off" class="js-bootstrap-date form-control" name="end_time" value="{$Think.post.end_time}" placeholder="结束时间" style="width:120px">
+        <input type="submit" class="btn btn-primary" value="搜索" />
+        <a onclick="add()" class="btn btn-primary">图片上传配置</a>
+    </form>
+    <form >
+        <table class="table table-bordered table-hover margin-top-20" zIndex="100">
+            <thead>
+            <tr class="theader">
+                <th style="text-align:center;">
+                    <input onclick="selectAll()" type="checkbox"  name="controlAll" class="controlAll" id="controlAll">
+                </th>
+                <th>ID</th>
+                <th>文件内容</th>
+                <th>文件名</th>
+                <th>文件路径</th>
+                <th>文件网络地址</th>
+                <th>文件类型</th>
+                <th>描述</th>
+                <th>添加时间</th>
+                <th>状态</th>
+                <th>操作 &nbsp;
+                    <a href="javascript:;" class="btn btn-success btn-sm add-config-btn" id="upload">
+                        <i class="fa fa-plus-circle normal"></i> 上传图片
+                    </a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="list" id="vo">
+                <tr>
+                    <td>
+                        <input class="checkboxes" type="checkbox"  value="{$vo.id}" name="selected">
+                    </td>
+                    <td >{$vo.id}</td>
+                    <td ><img src="{$vo.fileurl}" alt="{$vo.filedes}" style="height: 50px" onclick="bigger('{$vo.fileurl}')"></td>
+                    <td >{$vo.filename}</td>
+                    <td >{$vo.filepath}</td>
+                    <td >{$vo.fileurl}</td>
+                    <td >
+                        <if condition="$vo.filetype eq 0">
+                            文件类型
+                            <elseif condition="$vo.filetype eq 1"/>
+                            图片类型
+                            <elseif condition="$vo.filetype eq 2"/>
+                            视频类型
+                            <elseif condition="$vo.filetype eq 3"/>
+                            音频类型
+                            <elseif condition="$vo.filetype eq 9"/>
+                            其他
+                        </if>
+                    </td>
+                    <td >{$vo.filedes}</td>
+                    <td >{$vo.addtime}</td>
+                    <td >
+                        <if condition="$vo.status eq 0">
+                            禁用
+                            <else/>
+                            正常
+                        </if>
+                    </td>
+                    <td>
+                        <!--<a class="btn btn-sm " onclick="edit({$vo.id})"><i class="fa fa-edit" title="修改"></i></a>                    -->
+                        
+                        <if condition="$vo.status eq 0">
+                                <a href="{:cmf_plugin_url('FileManage://image/status')}?id={$vo.id}&status=1"    class="btn btn-sm btn-success  js-ajax-delete" data-msg="确定启用吗？">启用</a>
+                            <else/>
+                                <a href="{:cmf_plugin_url('FileManage://image/status')}?id={$vo.id}&status=0"   class="btn btn-sm btn-warning js-ajax-delete" data-msg="确定禁用吗？">禁用</a>
+                        </if>
+
+                        <a href="{:cmf_plugin_url('FileManage://image/delete')}?id={$vo.id}"    class="btn btn-sm btn-danger  js-ajax-delete" data-msg="确定删除吗？">删除</a>    <!-- delete变为deleteMember方法 -->
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+        <div>
+            <a href="javascript:;" class="btn btn-danger radius" onclick="del_all();"> 批量删除</a>
+        </div>
+        <div class="pagination">{$page}</div>
+    </form>
+</div>
+
+
+
+
+
+<include file='public/scripts'>
+    <script src="__STATIC__/js/layer/layer.js"></script>
+    <script src="__STATIC__/js/custom/custom.js"></script>
+    <script>
+        //全选删除
+        function selectAll(){
+            var checklist = document.getElementsByName ("selected");
+            if(document.getElementById("controlAll").checked)
+            {
+                for(var i=0;i<checklist.length;i++)
+                {
+                    checklist[i].checked = 1;
+                }
+            }else{
+                for(var j=0;j<checklist.length;j++)
+                {
+                    checklist[j].checked = 0;
+                }
+            }
+        }
+
+        var str=document.getElementsByName("selected");
+        var objarray=str.length;
+        var chestr="";
+        for (i=0;i<objarray;i++)
+        {
+            if(str[i].checked == true)
+            {
+                chestr+=str[i].value+",";
+            }
+        }
+        console.log(chestr);
+    </script>
+    <script>
+        function del_all(){
+            var del_url = "{:cmf_plugin_url('FileManage://image/delete')}";
+            console.log('A');
+            var a = confirm('您确定要删除这些数据吗?');
+            if(a){
+                var question_class_ids = '';
+                var count = 0;
+                $('input[name="selected"]:checked').each(function(){
+                    count ++;
+                    question_class_ids += $(this).val() + ',';
+                });
+                console.log(count);
+                console.log(question_class_ids);
+                if (!count) {
+                    alert('对不起，请选择至少一项进行删除！');
+                    return;
+                }
+            }
+            question_class_ids = question_class_ids.substr(0, question_class_ids.length - 1);
+            $.ajax({
+                url:del_url,
+                data:{ids:question_class_ids},
+                success:function(data){
+                    console.log(data);
+                    if(data.type=='success'){
+                        layer.msg(data.msg,{time:2000},function(){
+                            window.location.reload();//刷新页面
+                        });
+                    }else if(data.type=='error'){
+                        layer.msg(data.msg);
+                    }
+                },
+                error:function(data){
+                    console.log(data);
+                    layer.msg('操作失败');
+                    return false;
+                }
+            })
+        }
+    </script>
+    <!-- 弹出层 -->
+    <script type="text/javascript">
+        var upload=layui.upload;
+        //上传
+        var uploadInst = upload.render({
+            elem: '#upload'
+            ,url: "{:cmf_plugin_url('FileManage://image/upload_img')}"
+            ,accept:"images"
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                //obj.preview(function(index, file, result){
+                //    $('#demo1').attr('src', result); //图片链接（base64）
+                //});
+            }
+            ,done: function(res){
+                if(res.code == 200){
+                    var html='<input type="hidden" name="" value="'+res.data.filepath+'">';
+                    $(this.elem).parent().append(html);
+                    layer.msg('上传成功');
+                    return setTimeout(function(){location.reload()},1000); //指定1秒刷新一次
+                }else{
+                    return layer.msg(res.message);
+                }
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+        /**
+         * 视频上传配置
+         */
+        function add($id) {
+            let addpage_url = "";
+            addpage_url = "{:cmf_plugin_url('FileManage://admin_index/image_config')}";
+            layer.open({
+                type: 2,
+                title: '图片上传配置',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['800px', '600px'],
+                fixed: false,
+                content: addpage_url, //iframe的url
+            });
+        }
+        /**
+         * 修改会员
+         */
+        function edit(data){
+            let editpage_url = "{:cmf_plugin_url('video://ad/edit')}?id="+data;
+            let edit_url = "{:cmf_plugin_url('video://ad/update')}";
+            layer.open({
+                type: 2,
+                title: '修改广告',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['800px', '600px'],
+                btn:['提交','关闭'],
+                fixed:false,
+                content: editpage_url, //iframe的url
+                yes:function(index, layero){
+                    var body = layer.getChildFrame('body', index);
+
+                    parentInfo = window["layui-layer-iframe" + index].callbackdata();          
+
+
+                 
+                    var dara = body.find('#fm').serialize();                    
+                    $.ajax({
+                        url:edit_url,
+                        data:dara,
+                         type:'post',
+                        success:function(data){
+                   
+                            if(data.code=='1'){
+                                layer.msg(data.msg,{time:2000},function(){
+                                    layer.closeAll();
+                                    window.location.reload();//刷新页面
+                                });
+                            }else if(data.code=='0'){
+                                layer.msg(data.msg);
+                            }
+                        },
+                        error:function(data){
+                            console.log(data);
+                            layer.msg('修改失败');
+                            return false;
+                        }
+                    })
+                }
+            });
+        }
+       function bigger(img){
+           layer.open({
+               type: 1,
+               title: false,
+               closeBtn: 0,
+               area: ['auto'],
+               skin: 'layui-layer-nobg', //没有背景色
+               shadeClose: true,
+               content: '<img src="'+img+'" style="max-height: 500px;max-width: 800px">'
+           });
+       }
+
+    </script>
+
+
+
+</body>
+</html>
